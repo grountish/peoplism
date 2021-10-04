@@ -1,5 +1,6 @@
 <template>
   <div>
+    <div class="ball"></div>
     <section class="flex flex-col w-full h-screen px-12 space-y-4 fadeIn">
       <div class="flex flex-col mt-auto lg:flex-row lg:pr-24">
         <h1 class="sm:text-nav lg:w-10/12 lg:text-6xl Haffer">
@@ -39,7 +40,7 @@
       </div>
       <div class="px-12 py-12 lg:flex lg:flex-row-reverse">
         <div class="px-12 my-auto lg:w-11/12 effords">
-          <h1 class="text-5xl Haffer ">
+          <h1 class="text-5xl Haffer">
             DEIB efforts don’t always yield results
           </h1>
           <p class="pr-20 Copernicus">
@@ -58,17 +59,25 @@
             At Peoplism, we do DEIB differently
           </h1>
           <p class="pb-8 pr-20 Copernicus">
-            We have a long track record of not just happy clients, but concrete results that have meaningfully improved employee experience and increased representation. 
+            We have a long track record of not just happy clients, but concrete
+            results that have meaningfully improved employee experience and
+            increased representation.
           </p>
           <ButtonBase typeBtn="primary">Partner with us</ButtonBase>
         </div>
         <div class="relative w-full">
           <!-- <img src="/cake2.png" alt="cake1" class="transform scale-125" /> -->
-          <img src="/cake2a.png" alt="cake1" class="relative w-7/12 mx-auto frontCircle" />
-          
-            
-          <img src="/cake2b.png" alt="cake1" class="absolute top-0 w-7/12 mx-auto backCircle " />
-          
+          <img
+            src="/cake2a.png"
+            alt="cake1"
+            class="relative w-7/12 mx-auto frontCircle"
+          />
+
+          <img
+            src="/cake2b.png"
+            alt="cake1"
+            class="absolute top-0 w-7/12 mx-auto backCircle"
+          />
         </div>
       </div>
     </section>
@@ -302,11 +311,10 @@
 import gsap from 'gsap'
 // or get other plugins:
 import ScrollTrigger from 'gsap/ScrollTrigger'
-import { CSSRulePlugin } from 'gsap/all';
+import { CSSRulePlugin } from 'gsap/all'
 
 export default {
   mounted() {
-    
     this.initAnimation()
     const root = document.documentElement
     const marqueeElementsDisplayed = getComputedStyle(root).getPropertyValue(
@@ -395,64 +403,91 @@ export default {
     }
   },
   methods: {
-     initAnimation() {
+    initAnimation() {
       gsap.registerPlugin(ScrollTrigger)
       gsap.registerPlugin(CSSRulePlugin)
-       gsap.from('.cake1',{
+
+      gsap.set('.ball', { xPercent: -50, yPercent: -50 })
+
+      const ball = document.querySelector('.ball')
+      const pos = { x: window.innerWidth / 2, y: window.innerHeight / 2 }
+      const mouse = { x: pos.x, y: pos.y }
+      const speed = 0.0835
+
+      const xSet = gsap.quickSetter(ball, 'x', 'px')
+      const ySet = gsap.quickSetter(ball, 'y', 'px')
+
+      window.addEventListener('mousemove', (e) => {
+        mouse.x = e.x
+        mouse.y = e.y
+      })
+
+      gsap.ticker.add(() => {
+        // adjust speed for higher refresh monitors
+        const dt = 1.0 - Math.pow(1.0 - speed, gsap.ticker.deltaRatio())
+
+        pos.x += (mouse.x - pos.x) * dt
+        pos.y += (mouse.y - pos.y) * dt
+        xSet(pos.x)
+        ySet(pos.y)
+      })
+
+      // special thanks to Blake Bowen for most of the code.
+
+      gsap.from('.cake1', {
         scrollTrigger: {
           trigger: '.cake1',
           scrub: true,
           start: 'top bottom',
           end: 'center top',
         },
-        y:-100, 
-        scale:.8
-      });
-      let unl = CSSRulePlugin.getRule(".underlined::after");
+        y: -100,
+        scale: 0.8,
+      })
+      let unl = CSSRulePlugin.getRule('.underlined::after')
       console.log(unl)
-       gsap.from(unl,{
-       
+      gsap.from(unl, {
         cssRule: {
-    width: 120,
-  }
-      });
-       gsap.from('.effords',{
+          width: 120,
+        },
+      })
+      gsap.from('.effords', {
         scrollTrigger: {
           trigger: '.effords',
           scrub: true,
           start: 'top bottom',
           end: 'center top',
         },
-        y:100, 
-      });
-       gsap.from('.peoplism',{
+        y: 100,
+      })
+      gsap.from('.peoplism', {
         scrollTrigger: {
           trigger: '.peoplism',
           // scrub: true,
           start: 'center bottom',
           end: 'center top',
         },
-        y:100
-      });
-       gsap.to('.backCircle',{
+        y: 100,
+      })
+      gsap.to('.backCircle', {
         scrollTrigger: {
           trigger: '.backCircle',
           scrub: true,
           start: 'center bottom',
           end: 'center top',
         },
-        scale:1.9
-      });
-       gsap.from('.frontCircle',{
+        scale: 1.9,
+      })
+      gsap.from('.frontCircle', {
         scrollTrigger: {
           trigger: '.frontCircle',
           scrub: true,
           start: 'center bottom',
           end: 'center top',
         },
-        scale:1.3
-      });
-      },
+        scale: 1.3,
+      })
+    },
     scrollTo(direction) {
       if (document) {
         let wrapper = document.getElementsByClassName('overflow-x-scroll')[0]
@@ -516,4 +551,15 @@ export default {
 }
 </script>
 <style scoped>
+.ball {
+  width: 10px;
+  height: 10px;
+  position: fixed;
+  top: 0;
+  left: 12px;
+  background-color: #1C433A;
+  border: 3px solid #DBE0FA;
+  border-radius: 50%;
+  z-index: 3;
+}
 </style>
